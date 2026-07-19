@@ -5,7 +5,7 @@ set -e
 # CommitDev Installer
 # ==================================================
 
-REPO="WaleX-projects/commitdev-cli"
+REPO="WaleX-projects/Test-repo"
 BINARY_NAME="commitdev"
 TMP_DIR="/tmp"
 
