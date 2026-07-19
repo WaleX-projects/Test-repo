@@ -111,7 +111,7 @@ from commitdev.commands.setup import (
 
 from commitdev.commands.analytics import analytics
 from commitdev.commands.integrations import integrations
-from commitdev.commands.publishing import listen_for_drafts
+from commitdev.commands.publishing import watch
 
 
 # ==========================================
@@ -163,7 +163,7 @@ app.command()(drafts)
 app.command()(draft)
 app.command()(approve)
 app.command()(regenerate)
-app.command()(listen_for_drafts)
+app.command()(watch)
 
 # ==========================================
 # Posts
