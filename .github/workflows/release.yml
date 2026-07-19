@@ -44,7 +44,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
 
-          # Install build tools + runtime dependencies
           pip install \
             pyinstaller \
             typer \
@@ -57,7 +56,6 @@ jobs:
             setuptools \
             setuptools-scm
 
-          # Install the project itself (editable mode helps discovery)
           pip install -e .
 
       ####################################################
@@ -70,16 +68,8 @@ jobs:
           pyinstaller \
             --clean \
             --noconfirm \
-            --onefile \
-            --collect-submodules commitdev \
-            --hidden-import=commitdev.commands.publishing \
-            --hidden-import=commitdev.commands \
-            --hidden-import=commitdev.api \
-            --hidden-import=commitdev.config \
-            --hidden-import=commitdev \
-            --add-data "commitdev/hooks:commitdev/hooks" \
-            --name "${{ matrix.asset }}" \
-            commitdev/main.py
+            commitdev.spec \
+            --name "${{ matrix.asset }}"
 
           chmod +x "dist/${{ matrix.asset }}"
 
@@ -93,16 +83,8 @@ jobs:
           python -m PyInstaller `
             --clean `
             --noconfirm `
-            --onefile `
-            --collect-submodules commitdev `
-            --hidden-import commitdev.commands.publishing `
-            --hidden-import commitdev.commands `
-            --hidden-import commitdev.api `
-            --hidden-import commitdev.config `
-            --hidden-import commitdev `
-            --add-data "commitdev/hooks;commitdev/hooks" `
-            --name "${{ matrix.asset }}" `
-            commitdev/main.py
+            commitdev.spec `
+            --name "${{ matrix.asset }}"
 
       ####################################################
       # DEBUG

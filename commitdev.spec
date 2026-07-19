@@ -1,0 +1,51 @@
+# commitdev.spec
+block_cipher = None
+
+a = Analysis(
+    ['commitdev/main.py'],
+    pathex=[],
+    binaries=[],
+    datas=[('commitdev/hooks', 'commitdev/hooks')],
+    hiddenimports=[
+        'commitdev.commands.publishing',
+        'commitdev.commands',
+        'commitdev.api',
+        'commitdev.config',
+        'commitdev',
+        'rich',
+        'rich.console',
+        'rich.panel',
+        'rich.progress',
+        'rich.theme',
+        'rich_pixels',
+        'PIL',
+        'PIL.Image',
+        'websockets',
+        'asyncio',
+        'typer',
+    ],
+    hookspath=[],
+    runtime_hooks=[],
+    excludes=[],
+    win_no_prefer_redirects=False,
+    win_private_assemblies=False,
+    cipher=block_cipher,
+    noarchive=False,
+)
+
+pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
+
+exe = EXE(
+    pyz,
+    a.scripts,
+    a.binaries,
+    a.zipfiles,
+    a.datas,
+    [],
+    name='commitdev',
+    debug=False,
+    bootloader_ignore_signals=False,
+    strip=False,
+    upx=True,
+    console=True,
+)

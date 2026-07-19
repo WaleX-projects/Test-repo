@@ -6,7 +6,6 @@ env/
 # PyInstaller / Build outputs
 build/
 dist/
-*.spec
 
 # Python metadata and caches
 __pycache__/
