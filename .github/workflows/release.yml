@@ -37,13 +37,12 @@ jobs:
           cache: pip
 
       ####################################################
-      # DEPENDENCIES (Common for all platforms)
+      # DEPENDENCIES
       ####################################################
       - name: Install Dependencies
         shell: bash
         run: |
           python -m pip install --upgrade pip
-
           pip install \
             pyinstaller \
             typer \
@@ -55,7 +54,6 @@ jobs:
             rich-pixels \
             setuptools \
             setuptools-scm
-
           pip install -e .
 
       ####################################################
@@ -65,12 +63,18 @@ jobs:
         if: runner.os != 'Windows'
         shell: bash
         run: |
-          pyinstaller \
-            --clean \
-            --noconfirm \
-            commitdev.spec
+          pyinstaller --clean --noconfirm commitdev.spec
 
-          chmod +x "dist/${{ matrix.asset }}"
+          # Rename output
+          if [ -f "dist/commitdev" ]; then
+            mv "dist/commitdev" "dist/${{ matrix.asset }}"
+            chmod +x "dist/${{ matrix.asset }}"
+            echo "✓ Successfully built ${{ matrix.asset }}"
+          else
+            echo "❌ Output file not found!"
+            ls -la dist/
+            exit 1
+          fi
 
       ####################################################
       # WINDOWS BUILD
@@ -79,11 +83,17 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          python -m PyInstaller `
-            --clean `
-            --noconfirm `
-            commitdev.spec `
-            
+          python -m PyInstaller --clean --noconfirm commitdev.spec
+
+          # Rename output
+          if (Test-Path "dist/commitdev.exe") {
+            Move-Item "dist/commitdev.exe" "dist/${{ matrix.asset }}" -Force
+            echo "✓ Successfully built ${{ matrix.asset }}"
+          } else {
+            echo "❌ Output file not found!"
+            dir dist
+            exit 1
+          }
 
       ####################################################
       # DEBUG
@@ -96,7 +106,7 @@ jobs:
           find build -name "warn-*.txt" -exec cat {} \; 2>/dev/null || true
 
       ####################################################
-      # UPLOAD ARTIFACT
+      # UPLOAD
       ####################################################
       - name: Upload Binary
         uses: actions/upload-artifact@v4
