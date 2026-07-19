@@ -68,8 +68,7 @@ jobs:
           pyinstaller \
             --clean \
             --noconfirm \
-            commitdev.spec \
-            --name "${{ matrix.asset }}"
+            commitdev.spec
 
           chmod +x "dist/${{ matrix.asset }}"
 
@@ -84,7 +83,7 @@ jobs:
             --clean `
             --noconfirm `
             commitdev.spec `
-            --name "${{ matrix.asset }}"
+            
 
       ####################################################
       # DEBUG
