@@ -587,6 +587,49 @@ async def handle_publishing_pipeline(ws, payload):
 # ──────────────────────────────────────────────────────────
 # CLI ENTRYPOINT ROUTINE
 # ──────────────────────────────────────────────────────────
+async def _listen_for_drafts_loop():
+    while True:
+        token = fetch_fresh_token()
+        url = f"wss://commitdev.name.ng/ws/drafts/?token={token}"
+        
+        extra_headers = {
+            "Authorization": f"Bearer {token}",
+            "Origin": "https://commitdev.name.ng",
+            "User-Agent": "CommitDev-Agent/1.0"
+        }
+        
+        console.print("  [meta]📡 Connecting stream hook to live staging sockets...[/meta]")
+        
+        try:
+            async with websockets.connect(url, additional_headers=extra_headers) as ws:
+                console.print("  [success]✓ Active socket connection secure. Monitoring workspace background pushes...[/success]")
+                
+                while True:
+                    message = await ws.recv()
+                    event_data = json.loads(message)
+                    
+                    if event_data.get("type") == "send_private_message":
+                        payload = event_data.get("payload", {})
+                        if payload.get("status") == "draft_saved":
+                            await handle_publishing_pipeline(ws, payload)
+                            break 
+
+        except websockets.exceptions.InvalidStatus as e:
+            if e.response.status_code == 403:
+                console.print("\n  [error]✕ Handshake Rejected:[/error] Server returned HTTP 403 Forbidden profile metrics.\n")
+                break
+            else:
+                console.print(f"\n  [error]✕ Connection Drop:[/error] Socket cluster rejected target: HTTP {e.response.status_code}\n")
+                
+        except websockets.exceptions.ConnectionClosed as e:
+            console.print(f"\n  [meta]🔌 Sockets disconnected (Code {e.code}). Re-routing network matrix loop in 5 seconds...[/meta]")
+            
+        except Exception as e:
+            console.print(f"\n  [error]✕ Pipeline Driver Error:[/error] [meta]{e}[/meta]\n")
+            
+        await asyncio.sleep(5)
+
+
 def listen_for_drafts():
     """Spawns the long-running operational background async thread loop worker."""
     console.print("\n[brand]CommitDev[/brand] [meta]•[/meta] Live Monitor Agent")
@@ -595,8 +638,3 @@ def listen_for_drafts():
         asyncio.run(_listen_for_drafts_loop())
     except KeyboardInterrupt:
         console.print("\n  [meta]› Agent sequence halted gracefully via terminal signal. Good bye.[/meta]\n")
-        
-
-
-
-     
