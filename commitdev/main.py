@@ -18,7 +18,7 @@ from commitdev.commands.drafts import (
     draft,
     approve,
     regenerate,
-    listen_for_drafts
+    
 )
 
 from commitdev.commands.posts import (
@@ -34,7 +34,7 @@ from commitdev.commands.repos import (
 from commitdev.commands.setup import setup, uninstall
 from commitdev.commands.analytics import analytics
 from commitdev.commands.integrations import integrations
-
+from commitdev.commands.publishing import listen_for_drafts
 app = typer.Typer()
 
 # Auth
